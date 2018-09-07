@@ -1,6 +1,5 @@
 // when first loading the page
 window.addEventListener('load', () => {
-  console.log('hi');
   // only show the counter if we have localstorage for it
   if (localStorage['tenclickchallenge']) {
     let userInfo = JSON.parse(localStorage['tenclickchallenge']);
