@@ -1,16 +1,15 @@
 // when first loading the page
 window.addEventListener('load', () => {
-  // only show the counter if we have localstorage for it
-  if (localStorage['tenclickchallenge']) {
-    let userInfo = JSON.parse(localStorage['tenclickchallenge']);
-    let { numClicks } = userInfo;
-    updateTenClickDivs(numClicks);
-  }
+  checkIfCacheExistsAndCreateIfNot(0);
 });
 
 // every subsequent click
 document.addEventListener('mousedown', event => {
-  // check if there is a stored cache
+  checkIfCacheExistsAndCreateIfNot(1);
+});
+
+function checkIfCacheExistsAndCreateIfNot(n = 0) {
+  // check if there is a stored cache, and add if not
   if (!localStorage['tenclickchallenge']) {
     localStorage['tenclickchallenge'] = JSON.stringify({
       numClicks: 0,
@@ -21,12 +20,12 @@ document.addEventListener('mousedown', event => {
   let userInfo = JSON.parse(localStorage['tenclickchallenge']);
   let { numClicks, currentDay } = userInfo;
 
-  let newNumClicks = parseInt(numClicks) + 1;
+  let newNumClicks = parseInt(numClicks) + n;
   let newDay = currentDay;
 
   // if it's a new day reset number of clicks
   if (new Date().toLocaleDateString() != currentDay) {
-    newNumClicks = 1;
+    newNumClicks = n;
     newDay = new Date().toLocaleDateString();
   }
 
@@ -38,7 +37,7 @@ document.addEventListener('mousedown', event => {
     numClicks: newNumClicks,
     currentDay: newDay
   });
-});
+}
 
 function updateTenClickDivs(numClicks) {
   if (!document.getElementById('tenclicks')) {
@@ -57,14 +56,16 @@ function updateTenClickDivs(numClicks) {
     tenclicks.id = 'tenclicks';
     document.body.appendChild(tenclicks);
   }
-  document.getElementById('tenclicks').innerHTML = `${numClicks}`;
-  const maxClicks = 68;
+
+  const maxClicks = 10;
   const textColor = numClicks > maxClicks ? '#fff' : '#ccc';
   const backgroundColor = numClicks > maxClicks ? '#d84b37' : '#fff';
 
-  document.getElementById('tenclicks').style.color = textColor;
-  document.getElementById('tenclicks').style.background = backgroundColor;
-  document.getElementById('tenclicks').style.border =
+  let tenclicks = document.getElementById('tenclicks');
+  tenclicks.innerHTML = `${numClicks}`;
+  tenclicks.style.color = textColor;
+  tenclicks.style.background = backgroundColor;
+  tenclicks.style.border =
     numClicks > maxClicks
       ? `1px ${backgroundColor} solid`
       : `1px ${textColor} solid`;
